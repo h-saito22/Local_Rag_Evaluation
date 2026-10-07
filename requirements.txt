@@ -1,0 +1,7 @@
+langchain-core
+langchain-text-splitters
+langchain-google-genai
+python-dotenv
+langgraph
+langchain-ollama
+numpy
