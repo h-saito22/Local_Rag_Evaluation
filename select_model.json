@@ -1,0 +1,20 @@
+{"switch": "Cloud_Cloud",
+    "Local_Local": {
+        "Embeddings": "qwen3-embedding:0.6b",   
+        "LLM": "qwen3:8b" 
+    }
+,
+"Cloud_Local": {
+        "Embeddings": "models/gemini-embedding-001", 
+        "LLM": "qwen3:8b" 
+    },
+
+    "Cloud_Cloud": {
+        "Embeddings": "models/gemini-embedding-001", 
+        "LLM": "gemini-3.5-flash-lite" 
+    },
+    "Local_Cloud": {
+        "Embeddings": "qwen3-embedding:0.6b",
+        "LLM": "gemini-3.5-flash-lite" 
+    }
+}
