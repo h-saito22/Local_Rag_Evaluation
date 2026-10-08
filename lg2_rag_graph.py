@@ -17,9 +17,10 @@ from dotenv import load_dotenv
 from langgraph.graph import StateGraph, START, END
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.vectorstores import InMemoryVectorStore
-from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
-
 load_dotenv(Path(__file__).resolve().parents[0] / ".env")
+from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
+from select_model import select_model ,embeddings , embeddings_class ,LLM_class
+
 MODEL = os.getenv("GEMINI_MODEL")
 text = (Path(__file__).resolve().parents[0] /"sample_doc.txt").read_text(encoding="utf-8")
 
@@ -30,7 +31,7 @@ splitter = RecursiveCharacterTextSplitter(chunk_size = 50 ,chunk_overlap = 20)
 text_list = splitter.split_text(text)
 embenddings = GoogleGenerativeAIEmbeddings(model = "models/gemini-embedding-001")
 store = InMemoryVectorStore.from_texts(text_list , embenddings)
-llm = ChatGoogleGenerativeAI(model =MODEL,temperature =0)
+llm = select_model
 
 class State(TypedDict):
     question : str 
@@ -57,7 +58,7 @@ def generate(state:State):
     context = state["context"]
     question = state["question"]
 
-    prompt = f"""以下の資料だけをコン卿に答えてください。
+    prompt = f"""以下の資料だけを根拠に答えてください。
      資料にない場合は「資料に記載がありません」と返答してください。
       #資料
       {context}
@@ -85,3 +86,4 @@ if __name__ == "__main__":
     print(result["answer"])
     print()
     print(result)
+    print(select_model)
