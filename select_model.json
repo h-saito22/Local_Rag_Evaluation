@@ -1,20 +1,30 @@
-{"switch": "Cloud_Cloud",
+{
+    "temperature" : 0 ,
+    "switch": "Local_Local",
     "Local_Local": {
-        "Embeddings": "qwen3-embedding:0.6b",   
-        "LLM": "qwen3:8b" 
+        "Embeddings": "qwen3-embedding:0.6b",
+        "Embeddings_class": "OllamaEmbeddings",   
+        "LLM": "qwen3:8b" ,
+        "LLM_class" : "ChatOllama"
     }
 ,
 "Cloud_Local": {
         "Embeddings": "models/gemini-embedding-001", 
-        "LLM": "qwen3:8b" 
+        "Embeddings_class": "GoogleGenerativeAIEmbeddings",
+        "LLM": "qwen3:8b" ,
+        "LLM_class" : "ChatOllama"
     },
 
     "Cloud_Cloud": {
-        "Embeddings": "models/gemini-embedding-001", 
-        "LLM": "gemini-3.5-flash-lite" 
+        "Embeddings": "models/gemini-embedding-001",
+        "Embeddings_class": "GoogleGenerativeAIEmbeddings",
+        "LLM": "gemini-3.5-flash-lite",
+        "LLM_class": "ChatGoogleGenerativeAI"
     },
     "Local_Cloud": {
         "Embeddings": "qwen3-embedding:0.6b",
-        "LLM": "gemini-3.5-flash-lite" 
+        "Embeddings_class": "OllamaEmbeddings",   
+        "LLM": "gemini-3.5-flash-lite" ,
+        "LLM_class": "ChatGoogleGenerativeAI"
     }
 }
