@@ -19,7 +19,8 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.vectorstores import InMemoryVectorStore
 load_dotenv(Path(__file__).resolve().parents[0] / ".env")
 from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
-from select_model import select_model ,embeddings , embeddings_class ,LLM_class
+from select_model import select_model ,embeddings , embedding_model
+from langchain_chroma import Chroma
 
 MODEL = os.getenv("GEMINI_MODEL")
 text = (Path(__file__).resolve().parents[0] /"sample_doc.txt").read_text(encoding="utf-8")
@@ -29,7 +30,13 @@ text = (Path(__file__).resolve().parents[0] /"sample_doc.txt").read_text(encodin
 # TODO: splitter → text_list → embeddings → store、llm も作っておく
 splitter = RecursiveCharacterTextSplitter(chunk_size = 50 ,chunk_overlap = 20)
 text_list = splitter.split_text(text)
-embenddings = GoogleGenerativeAIEmbeddings(model = "models/gemini-embedding-001")
+store = Chroma(
+    collection_name="example_collection",
+    embedding_function=embeddings,
+    persist_directory="./chroma_langchain_db",
+)
+
+embenddings = embedding_model
 store = InMemoryVectorStore.from_texts(text_list , embenddings)
 llm = select_model
 
@@ -90,4 +97,5 @@ if __name__ == "__main__":
     print(result["answer"])
     print()
     print(result)
-    print(select_model)
+    print(F"埋め込みモデル :{embedding_model}",
+          f"Chat Model : {select_model}")
