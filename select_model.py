@@ -27,3 +27,6 @@ if embeddings_class == "GoogleGenerativeAIEmbeddings":
 elif embeddings_class == "OllamaEmbeddings":
     embedding_model = OllamaEmbeddings(model =embeddings)
 else : raise ValueError(f"埋め込みモデルが違います。選択した埋め込みモデル{embeddings}")
+
+
+embeddings_dic = {"Embeddings_Class" :embeddings_class  , "Embeddings_name" : embeddings}
