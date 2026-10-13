@@ -44,7 +44,7 @@ print(h.hexdigest())
 models_metadata.update({"hash recoginition" : h.hexdigest(),
                                           "chunk_size" : CHUNK_SIZE,
                                           "chunk_overlap" : CHUNK_OVERLAP})
-print(models_metadata)
+
 embenddings = embedding_model
 store = Chroma(
 embedding_function=embedding_model,
@@ -55,34 +55,44 @@ data = store.get()
 if len(data["documents"]) == 0 :
     store.add_texts(text_list)
     print("インデックスを作成しました。")
-    store._collection.modify(metadata = models_metadata)
+    store._collection.modify(metadata = models_metadata ) #models_metadata 
     print(store._collection.metadata)
 else:
+    if store._collection.metadata == None :
+        raise ValueError("作成インデックスの中身がからです。")
+    for k in models_metadata:
+        if k not in store._collection.metadata :
+              raise ValueError(f"対象のインデックスが古いのでchroma_dbを削除してから再実行してください。")
+      
     if store._collection.metadata["Embeddings_name"] != models_metadata["Embeddings_name"] :
         stored_embeddings_name = store._collection.metadata["Embeddings_name"]
         current_embeddings_name = models_metadata["Embeddings_name"]
         raise ValueError(f"chroma_dbのインデックスで、埋め込みモデルの食い違いがありました。\n"
-                          f"このインデックスは、{stored_embeddings_name}で作成されましたが現在は、{current_embeddings_name}です。\n"
-                          f"保存されたインデックスを使う場合は、select_model.jsonのモデルを、{stored_embeddings_name}に戻してください。\n"
-                          f"現在の設定で行う場合は、chroma_dbフォルダを削除して実行すると、インデックスが作り直されます。")
+                            f"このインデックスは、{stored_embeddings_name}で作成されましたが現在は、{current_embeddings_name}です。\n"
+                            f"保存されたインデックスを使う場合は、select_model.jsonのモデルを、{stored_embeddings_name}に戻してください。\n"
+                            f"現在の設定で行う場合は、chroma_dbフォルダを削除して実行すると、インデックスが作り直されます。")
+    
     elif store._collection.metadata["chunk_size"] != models_metadata["chunk_size"]:
         stored_chunk_size = store._collection.metadata["chunk_size"]
         current_chunk_size = models_metadata["chunk_size"]
-        raise ValueError(f"chroma_dbのインデックスで、埋め込みモデルの食い違いがありました。\n"
+        raise ValueError(f"chroma_dbのインデックスで、埋め込みモデルの設定の食い違いがありました。\n"
                          f"このインデックスは、{stored_chunk_size}で作成されましたが現在は、{current_chunk_size}です。\n"
-                         f"保存されたインデックスを使用する際は、現在のチャンクサイズを{stored_chunk_size}に変更して再実行してください。\n"
+                         f"保存されたインデックスを使用する際は、lg2_rag_graph.py内のCHUNK_SIZEを{stored_chunk_size}に変更して再実行してください。\n"
                          f"現在の設定で行う場合は、chroma_dbフォルダを削除して実行をするとインデックスが作り直されます。")
+    
     elif store._collection.metadata["chunk_overlap"] != models_metadata["chunk_overlap"]:
         stored_chunk_overlap = store._collection.metadata["chunk_overlap"]
         cuurent_chunk_overlap = models_metadata["chunk_overlap"]
-        raise ValueError(f"chroma_dbのインデックスで、埋め込みモデルの食い違いがありました。\n"
+        raise ValueError(f"chroma_dbのインデックスで、埋め込みモデルの設定の食い違いがありました。\n"
                         f"このインデックスは、{stored_chunk_overlap}で作成されましたが現在は、{cuurent_chunk_overlap}です。\n"
-                        f"保存されたインデックスを使用する際は、現在のチャンクサイズを{stored_chunk_overlap}に変更して再実行してください。\n"
+                        f"保存されたインデックスを使用する際は、lg2_rag_graph.py内のCHUNK_OVERLAPを{stored_chunk_overlap}に変更して再実行してください。\n"
                         f"現在の設定で行う場合は、chroma_dbフォルダを削除して実行をするとインデックスが作り直されます。")
+    
     elif store._collection.metadata["hash recoginition"] != models_metadata["hash recoginition"]:
-        raise ValueError(f"chroma_db作成時の文章ファイルに食い違いがありました。\n",
-                         f"文章変更に思い当たりがある場合は,chroma_dbフォルダを削除して再実行してください。\n"
-                         f"思いあたりがない場合は、ターミナル上で git stutusを実行して変更されたファイルを確認して修正を行ってください。")
+        raise ValueError(f"chroma_db作成時の文章ファイルに食い違いがありました。\n"
+                         f"文章変更に思いあたりがある場合は,chroma_dbフォルダを削除して再実行してください。\n"
+                         f"思いあたりがない場合は、ターミナル上で git statusを実行して変更されたファイルを確認して修正を行ってください。")
+    
     else :
         print("読み込みました。")
 
