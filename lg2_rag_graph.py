@@ -33,14 +33,18 @@ text_files = sorted(text_files)
 print(text_files)
 splitter = RecursiveCharacterTextSplitter(chunk_size = CHUNK_SIZE ,chunk_overlap = CHUNK_OVERLAP)
 text_list = []
+metadata_list = []
 h = hashlib.sha256()
 for text in text_files :
+    text_name = Path(text).name
     text = text.read_text(encoding="utf-8")
     h.update(text.encode("utf-8"))
     text = splitter.split_text(text)
+    metadata_list.extend([{"source": text_name}] * len(text))
     text_list.extend(text)
     
 print(h.hexdigest())
+print(len(text_list), len(metadata_list))
 models_metadata.update({"hash recoginition" : h.hexdigest(),
                                           "chunk_size" : CHUNK_SIZE,
                                           "chunk_overlap" : CHUNK_OVERLAP})
@@ -53,13 +57,14 @@ embedding_function=embedding_model,
 
 data = store.get()
 if len(data["documents"]) == 0 :
-    store.add_texts(text_list)
+    store.add_texts(text_list, metadatas=metadata_list)
     print("インデックスを作成しました。")
     store._collection.modify(metadata = models_metadata ) #models_metadata 
     print(store._collection.metadata)
 else:
-    if store._collection.metadata == None :
-        raise ValueError("作成インデックスの中身がからです。")
+    if store._collection.metadata is None :
+        raise ValueError("chroma_dbのインデックスに、作成時の設定メモ（メタデータ）がありません。\n"
+                         "chroma_dbフォルダを削除して実行すると、インデックスが作り直されます。")
     for k in models_metadata:
         if k not in store._collection.metadata :
               raise ValueError(f"対象のインデックスが古いのでchroma_dbを削除してから再実行してください。")
@@ -75,22 +80,22 @@ else:
     elif store._collection.metadata["chunk_size"] != models_metadata["chunk_size"]:
         stored_chunk_size = store._collection.metadata["chunk_size"]
         current_chunk_size = models_metadata["chunk_size"]
-        raise ValueError(f"chroma_dbのインデックスで、埋め込みモデルの設定の食い違いがありました。\n"
-                         f"このインデックスは、{stored_chunk_size}で作成されましたが現在は、{current_chunk_size}です。\n"
+        raise ValueError(f"chroma_dbのインデックスで、チャンクサイズ（CHUNK_SIZE）の食い違いがありました。\n"
+                         f"このインデックスは、チャンクサイズ{stored_chunk_size}で作成されましたが現在は、{current_chunk_size}です。\n"
                          f"保存されたインデックスを使用する際は、lg2_rag_graph.py内のCHUNK_SIZEを{stored_chunk_size}に変更して再実行してください。\n"
                          f"現在の設定で行う場合は、chroma_dbフォルダを削除して実行をするとインデックスが作り直されます。")
     
     elif store._collection.metadata["chunk_overlap"] != models_metadata["chunk_overlap"]:
         stored_chunk_overlap = store._collection.metadata["chunk_overlap"]
-        cuurent_chunk_overlap = models_metadata["chunk_overlap"]
-        raise ValueError(f"chroma_dbのインデックスで、埋め込みモデルの設定の食い違いがありました。\n"
-                        f"このインデックスは、{stored_chunk_overlap}で作成されましたが現在は、{cuurent_chunk_overlap}です。\n"
+        current_chunk_overlap = models_metadata["chunk_overlap"]
+        raise ValueError(f"chroma_dbのインデックスで、チャンクオーバーラップ（CHUNK_OVERLAP）の食い違いがありました。\n"
+                        f"このインデックスは、チャンクオーバーラップ{stored_chunk_overlap}で作成されましたが現在は、{current_chunk_overlap}です。\n"
                         f"保存されたインデックスを使用する際は、lg2_rag_graph.py内のCHUNK_OVERLAPを{stored_chunk_overlap}に変更して再実行してください。\n"
                         f"現在の設定で行う場合は、chroma_dbフォルダを削除して実行をするとインデックスが作り直されます。")
     
     elif store._collection.metadata["hash recoginition"] != models_metadata["hash recoginition"]:
         raise ValueError(f"chroma_db作成時の文章ファイルに食い違いがありました。\n"
-                         f"文章変更に思いあたりがある場合は,chroma_dbフォルダを削除して再実行してください。\n"
+                         f"文章変更に思いあたりがある場合は、chroma_dbフォルダを削除して再実行してください。\n"
                          f"思いあたりがない場合は、ターミナル上で git statusを実行して変更されたファイルを確認して修正を行ってください。")
     
     else :
@@ -101,6 +106,7 @@ class State(TypedDict):
     question : str 
     context : str 
     answer : str
+    retrieved : list[dict] 
 
 
 # ---- Node: retrieve ----
@@ -109,12 +115,18 @@ def retrieve(state : State):
     question = state["question"]
 
     result = store.similarity_search_with_score(question,k=2)
+    retreive_list = []
     message_list = []
     for doc , score in result :
         message = doc.page_content
         message_list.append(message)
+        retreive_list.append(
+            {"content" : doc.page_content , 
+             "source" : doc.metadata["source"] ,
+             "score" : score}
+        )
     context = "\n---\n".join(message_list)
-    return {"context":context}
+    return {"context":context ,"retrieved" : retreive_list}
 
 # ---- Node: generate ----
 def generate(state:State):
