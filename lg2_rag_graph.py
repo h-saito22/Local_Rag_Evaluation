@@ -22,6 +22,7 @@ from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGener
 from select_model import select_model ,embeddings_dic , embedding_model
 from langchain_chroma import Chroma
 import hashlib
+import time
 
 CHUNK_SIZE = 200
 CHUNK_OVERLAP = 20
@@ -107,14 +108,17 @@ class State(TypedDict):
     context : str 
     answer : str
     retrieved : list[dict] 
-
+    retrieve_time : float
+    generate_time : float
 
 # ---- Node: retrieve ----
 def retrieve(state : State):
     print("[recive]受け取ったState", state)
     question = state["question"]
-
+    start_time = time.perf_counter()
     result = store.similarity_search_with_score(question,k=2)
+    end_time = time.perf_counter()
+    retrieve_time = end_time - start_time
     retreive_list = []
     message_list = []
     for doc , score in result :
@@ -126,7 +130,7 @@ def retrieve(state : State):
              "score" : score}
         )
     context = "\n---\n".join(message_list)
-    return {"context":context ,"retrieved" : retreive_list}
+    return {"context":context ,"retrieved" : retreive_list , "retrieve_time" : retrieve_time}
 
 # ---- Node: generate ----
 def generate(state:State):
@@ -144,8 +148,11 @@ def generate(state:State):
      #質問
      {question}
     """
+    start_time = time.perf_counter()
     answer = llm.invoke(prompt).text
-    return {"answer":answer}
+    end_time = time.perf_counter()
+    generate_time = end_time - start_time
+    return {"answer":answer, "generate_time" : generate_time}
 
 
 # ---- グラフ ----
