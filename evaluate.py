@@ -3,6 +3,7 @@ import csv
 from lg2_rag_graph import app 
 import numpy as np
 import time
+from score import score_file , judge
 
 csv_path = Path(__file__).resolve().parents[0] / "data" / "qa" / "qa_v1.csv"
 with open(csv_path ,encoding="utf-8" , newline="") as f :
@@ -46,9 +47,11 @@ mrr = sum(1 / r for r in hit_list) / len(rank_list)
 
 save_csv_dir = Path(__file__).resolve().parents[0] / "results"
 save_csv_dir.mkdir(exist_ok=True)
-save_path = save_csv_dir /"2-26_10_16_qwen3:1.7b.csv"
+save_path = save_csv_dir /"2026_10_16_qwen3-4b-q4_K_M_prompt_3b.csv"
 
 with open(save_path,"w",encoding="utf-8" , newline="") as f:
     writer =csv.DictWriter(f ,fieldnames=result_list[0].keys())
     writer.writeheader()
     writer.writerows(result_list)
+
+score_dic = score_file(save_path)
