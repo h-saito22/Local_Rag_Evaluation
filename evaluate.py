@@ -47,7 +47,7 @@ mrr = sum(1 / r for r in hit_list) / len(rank_list)
 
 save_csv_dir = Path(__file__).resolve().parents[0] / "results"
 save_csv_dir.mkdir(exist_ok=True)
-save_path = save_csv_dir /"2026_10_16_qwen3-4b-q4_K_M_prompt_3b.csv"
+save_path = save_csv_dir /"2026_10_16_qwen3-4b-q8_0.csv"
 
 with open(save_path,"w",encoding="utf-8" , newline="") as f:
     writer =csv.DictWriter(f ,fieldnames=result_list[0].keys())

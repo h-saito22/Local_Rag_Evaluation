@@ -4,7 +4,7 @@
     "Local_Local": {
         "Embeddings": "qwen3-embedding:0.6b",
         "Embeddings_class": "OllamaEmbeddings",   
-        "LLM": "qwen3:4b" ,
+        "LLM": "qwen3:4b-q8_0" ,
         "LLM_class" : "ChatOllama"
     }
 ,
