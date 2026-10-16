@@ -7,7 +7,7 @@ with open(csv_path ,encoding="utf-8" , newline="") as f :
     questions = csv.DictReader(f)
     question_answer = list(questions)
 
-csv_path = Path(__file__).resolve().parents[0] / "results"  / "2026_10_15_qwen3-8b_prompt_3b.csv"
+csv_path = Path(__file__).resolve().parents[0] / "results"  / "2026_10_16_qwen3.1.7b.csv"
 with open(csv_path ,encoding="utf-8" , newline="") as f :
     results = csv.DictReader(f)
     result = list(results)

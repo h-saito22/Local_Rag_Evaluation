@@ -110,6 +110,8 @@ class State(TypedDict):
     retrieved : list[dict] 
     retrieve_time : float
     generate_time : float
+    eval_count : int 
+    eval_duration : int
 
 # ---- Node: retrieve ----
 def retrieve(state : State):
@@ -150,11 +152,20 @@ def generate(state:State):
      #質問
      {question}
     """
+    # start_time = time.perf_counter()
+    # answer = llm.invoke(prompt).text
+    # end_time = time.perf_counter()
+    # generate_time = end_time - start_time
     start_time = time.perf_counter()
-    answer = llm.invoke(prompt).text
+    response = llm.invoke(prompt)          # メッセージ全体
     end_time = time.perf_counter()
+    answer = response.text                 # 回答の文字列（今までどおり）
+    print(response.response_metadata)      # ここにトークン数などが入っている
+    eval_count = response.response_metadata["eval_count"]
+    eval_duration = response.response_metadata["eval_duration"]
     generate_time = end_time - start_time
-    return {"answer":answer, "generate_time" : generate_time}
+
+    return {"answer":answer, "generate_time" : generate_time , "eval_count":eval_count , "eval_duration" : eval_duration}
 
 
 # ---- グラフ ----
@@ -176,4 +187,3 @@ if __name__ == "__main__":
     print(result)
     print(F"埋め込みモデル :{embedding_model}",
           f"Chat Model : {select_model}")
-    
