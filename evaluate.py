@@ -5,10 +5,10 @@ import numpy as np
 import time
 from score import score_file , judge
 
-qa_path = Path(__file__).resolve().parents[0] / "data" / "qa" / "qa_v1.csv"
+# qa_path = Path(__file__).resolve().parents[0] / "data" / "qa" / "qa_v1.csv"
 
 # LoRA用のデータ
-# qa_path = Path(__file__).resolve().parents[0] / "data" / "qa" / "qa_hard.csv"
+qa_path = Path(__file__).resolve().parents[0] / "data" / "qa" / "qa_hard.csv"
 with open(qa_path ,encoding="utf-8" , newline="") as f :
     questions = csv.DictReader(f)
     test = list(questions)
@@ -49,8 +49,7 @@ mrr = sum(1 / r for r in hit_list) / len(rank_list)
 
 save_csv_dir = Path(__file__).resolve().parents[0] / "results"
 save_csv_dir.mkdir(exist_ok=True)
-save_path = save_csv_dir /"2026_10_19_qwen3-4b-mlx-8bit_prompt_3b_qa_v1_LoRA.csv"
-
+save_path = save_csv_dir / "2026_10_19_qwen3-4b-mlx-8bit_prompt_3b_qa_hard_nothink.csv"
 with open(save_path,"w",encoding="utf-8" , newline="") as f:
     writer =csv.DictWriter(f ,fieldnames=result_list[0].keys())
     writer.writeheader()

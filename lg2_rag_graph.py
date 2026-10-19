@@ -119,7 +119,7 @@ class State(TypedDict):
     generate_time : float
     eval_count : int 
 
-USE_RAG = True 
+USE_RAG =  True 
 # ---- Node: retrieve ----
 def retrieve(state : State):
     print("[recive]受け取ったState", state)

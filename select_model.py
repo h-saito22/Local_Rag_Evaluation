@@ -27,6 +27,7 @@ elif LLM_class == "ChatOpenAI":
         api_key = "not-needed",
         temperature = 0,
         max_tokens = 4096,
+        extra_body={"chat_template_kwargs": {"enable_thinking": False}}
     )
 else :raise ValueError(f"{LLM_class}は存在しないです。使えるモデルは[ChatGoogleGenerativeAI,ChatOllama]です。選択箇所は{select_dic}になっています。")
 
