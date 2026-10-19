@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 from langchain_google_genai import ChatGoogleGenerativeAI ,GoogleGenerativeAIEmbeddings
 from langchain_ollama import ChatOllama ,OllamaEmbeddings
+from langchain_openai import ChatOpenAI
 
 with open(Path(__file__).resolve().parents[0] / "select_model.json", "r", encoding="utf-8") as f:
     d = json.load(f)
@@ -19,6 +20,14 @@ if LLM_class == "ChatGoogleGenerativeAI":
     select_model = ChatGoogleGenerativeAI(model=LLM,temperature=temperature)
 elif LLM_class == "ChatOllama":
     select_model = ChatOllama(model=LLM,temperature=temperature)
+elif LLM_class == "ChatOpenAI":
+    select_model = ChatOpenAI(
+        model = LLM,
+        base_url = "http://127.0.0.1:8080/v1",
+        api_key = "not-needed",
+        temperature = 0
+        # max_tokens = 4096,
+    )
 else :raise ValueError(f"{LLM_class}は存在しないです。使えるモデルは[ChatGoogleGenerativeAI,ChatOllama]です。選択箇所は{select_dic}になっています。")
 
 

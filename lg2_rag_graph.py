@@ -111,7 +111,6 @@ class State(TypedDict):
     retrieve_time : float
     generate_time : float
     eval_count : int 
-    eval_duration : int
 
 # ---- Node: retrieve ----
 def retrieve(state : State):
@@ -139,6 +138,7 @@ def generate(state:State):
     print("[generate]受け取ったState",state)
     context = state["context"]
     question = state["question"]
+    
 
 
 #以下の資料だけを根拠に答えてください。資料にない場合は「資料に記載がありません」と返答してください。
@@ -161,11 +161,10 @@ def generate(state:State):
     end_time = time.perf_counter()
     answer = response.text                 # 回答の文字列（今までどおり）
     print(response.response_metadata)      # ここにトークン数などが入っている
-    eval_count = response.response_metadata["eval_count"]
-    eval_duration = response.response_metadata["eval_duration"]
+    eval_count = response.usage_metadata["output_tokens"]
     generate_time = end_time - start_time
 
-    return {"answer":answer, "generate_time" : generate_time , "eval_count":eval_count , "eval_duration" : eval_duration}
+    return {"answer":answer, "generate_time" : generate_time , "eval_count":eval_count}
 
 
 # ---- グラフ ----

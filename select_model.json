@@ -16,7 +16,7 @@
     },
 
     "Cloud_Cloud": {
-        "Embeddings": "models/gemini-embedding-001",
+        "Embeddings": "models/gemin``i-embedding-001",
         "Embeddings_class": "GoogleGenerativeAIEmbeddings",
         "LLM": "gemini-3.5-flash-lite",
         "LLM_class": "ChatGoogleGenerativeAI"
@@ -26,5 +26,11 @@
         "Embeddings_class": "OllamaEmbeddings",   
         "LLM": "gemini-3.5-flash-lite" ,
         "LLM_class": "ChatGoogleGenerativeAI"
-    }
+    },
+    "Local_MLX": {
+    "Embeddings": "qwen3-embedding:0.6b",
+    "Embeddings_class": "OllamaEmbeddings",
+    "LLM": "Qwen/Qwen3-4B-MLX-8bit",
+    "LLM_class": "ChatOpenAI"
+}
 }
