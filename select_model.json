@@ -30,7 +30,7 @@
     "Local_MLX": {
     "Embeddings": "qwen3-embedding:0.6b",
     "Embeddings_class": "OllamaEmbeddings",
-    "LLM": "Qwen/Qwen3-4B-MLX-8bit",
+    "LLM" : "default_model",
     "LLM_class": "ChatOpenAI"
 }
 }

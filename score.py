@@ -13,9 +13,8 @@ def judge(qa, answer):
     return any(k in answer for k in keywords)
 
 
-def score_file(path):
-    csv_path = Path(__file__).resolve().parents[0] / "data" / "qa" / "qa_v1.csv"
-    with open(csv_path ,encoding="utf-8" , newline="") as f :
+def score_file(path,qa_path):
+    with open(qa_path ,encoding="utf-8" , newline="") as f :
         questions = csv.DictReader(f)
         question_answer = list(questions)
 
@@ -37,4 +36,5 @@ def score_file(path):
     return scores
 
 if __name__ == "__main__":
-    score_file(Path(__file__).resolve().parents[0] / "results" / "2026_10_16_qwen3-4b-q4_K_M_prompt_3b.csv")
+    score_file(Path(__file__).resolve().parents[0] / "results" / "2026_10_16_qwen3-4b-q4_K_M_prompt_3b.csv",
+               Path(__file__).resolve().parents[0] / "data" / "qa" / "qa_v1.csv")

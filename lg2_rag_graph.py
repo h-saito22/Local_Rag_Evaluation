@@ -23,19 +23,26 @@ from select_model import select_model ,embeddings_dic , embedding_model
 from langchain_chroma import Chroma
 import hashlib
 import time
-
+# チャンクサイズとチャンクの重なりの数を指定
 CHUNK_SIZE = 200
 CHUNK_OVERLAP = 20
 models_metadata = embeddings_dic.copy()
+
+#geminiのモデルを環境変数から取得
 MODEL = os.getenv("GEMINI_MODEL")
+#基準のパスを指定
 base_dir = Path(__file__).resolve().parents[0] /"data" / "docs"
+#基準パスの中の.mdファイルを参照する ->リスト型
 text_files = list(base_dir.rglob("*.md"))
 text_files = sorted(text_files)
 print(text_files)
+#テキスト分割のインスタンスを立てる
 splitter = RecursiveCharacterTextSplitter(chunk_size = CHUNK_SIZE ,chunk_overlap = CHUNK_OVERLAP)
 text_list = []
 metadata_list = []
+#ハッシュ化のインスタンスを立てる
 h = hashlib.sha256()
+#　テキストを読み込む
 for text in text_files :
     text_name = Path(text).name
     text = text.read_text(encoding="utf-8")
@@ -49,7 +56,7 @@ print(len(text_list), len(metadata_list))
 models_metadata.update({"hash recoginition" : h.hexdigest(),
                                           "chunk_size" : CHUNK_SIZE,
                                           "chunk_overlap" : CHUNK_OVERLAP})
-
+#埋め込みモデルのインスタンスを立てる
 embenddings = embedding_model
 store = Chroma(
 embedding_function=embedding_model,
@@ -112,9 +119,12 @@ class State(TypedDict):
     generate_time : float
     eval_count : int 
 
+USE_RAG = True 
 # ---- Node: retrieve ----
 def retrieve(state : State):
     print("[recive]受け取ったState", state)
+    if not USE_RAG :
+        return {"context":"" ,"retrieved" : [] , "retrieve_time" : 0}
     question = state["question"]
     start_time = time.perf_counter()
     result = store.similarity_search_with_score(question,k=2)
@@ -131,8 +141,8 @@ def retrieve(state : State):
              "score" : score}
         )
     context = "\n---\n".join(message_list)
+    
     return {"context":context ,"retrieved" : retreive_list , "retrieve_time" : retrieve_time}
-
 # ---- Node: generate ----
 def generate(state:State):
     print("[generate]受け取ったState",state)

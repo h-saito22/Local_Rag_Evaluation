@@ -25,8 +25,8 @@ elif LLM_class == "ChatOpenAI":
         model = LLM,
         base_url = "http://127.0.0.1:8080/v1",
         api_key = "not-needed",
-        temperature = 0
-        # max_tokens = 4096,
+        temperature = 0,
+        max_tokens = 4096,
     )
 else :raise ValueError(f"{LLM_class}は存在しないです。使えるモデルは[ChatGoogleGenerativeAI,ChatOllama]です。選択箇所は{select_dic}になっています。")
 
