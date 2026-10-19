@@ -1,6 +1,6 @@
 {
     "temperature" : 0 ,
-    "switch": "Local_Local",
+    "switch": "Local_MLX",
     "Local_Local": {
         "Embeddings": "qwen3-embedding:0.6b",
         "Embeddings_class": "OllamaEmbeddings",   
