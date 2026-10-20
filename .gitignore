@@ -4,4 +4,6 @@ __pycache__/
 *.pyc
 chroma_db/
 .DS_Store
-adapters/
+# LoRA の途中保存は除外（採用した 90 ステップ = adapters.safetensors と adapter_config.json だけコミット）
+adapters/qwen3-4b-raft/0*_adapters.safetensors
+.test_venv/
