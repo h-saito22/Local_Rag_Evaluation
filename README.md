@@ -67,7 +67,7 @@ flowchart LR
 
 ```bash
 # 1. ライブラリ
-pip install -r requirements.txt   # 【要確認】requirements.txt を最新にする
+pip install -r requirements.txt   # Python 3.11 で動作確認
 
 # 2. Ollama のモデル
 ollama pull qwen3:4b-q8_0
@@ -221,4 +221,3 @@ make_lora_data.py  LoRA 用の学習データ（train.jsonl / valid.jsonl）を�
 data/              文書・QA（評価用）と LoRA 用データ
 results/           評価結果の CSV（ファイル名＝日付_モデル_条件）
 ```
-実験ごとの仮説・予想・結果・解釈は、別に `07_experiment_log.csv` と `08_daily_log.md` に記録しています。【要確認】リポジトリに入れるか
